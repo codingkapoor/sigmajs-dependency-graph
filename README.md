@@ -85,3 +85,15 @@ node g <target node>
 ##### Notes
 - The best data structure to represent a dependency graph is DAG i.e., directed acyclic graph.
 - Algorithm still needs to support input files that lists processes and there dependencies.
+
+## Run
+
+### With Default Input
+```
+$ mvn exec:java -D exec.mainClass=com.codingkapoor.smfdependencygraph.Builder
+```
+
+### With User Input
+```
+$ mvn exec:java -D exec.mainClass=com.codingkapoor.smfdependencygraph.Builder -Dexec.args=input.txt
+```
