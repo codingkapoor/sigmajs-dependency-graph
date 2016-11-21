@@ -16,14 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Builder {
 
-	final private String nodeIdPrefix = "node";
-	final private String edgeIdPrefix = "edge";
+	final private String nodeIdPrefix = "n";
+	final private String edgeIdPrefix = "e";
 
-	final private String blank = "";
-	
 	private InputStream is;
 
-	private Graph buildDataObjectFromInputFile() {
+	private Graph buildGraph() {
 
 		try (Scanner scanner = new Scanner(is)) {
 
@@ -37,28 +35,29 @@ public class Builder {
 
 				sourceNodeLabel = scanner.nextLine();
 
-				Node sourceNodeObj = new Node(sourceNodeLabel);
-				if (nodes.contains(sourceNodeObj)) {
-					sourceNodeObj = getNativeObjFromNodesSet(nodes, sourceNodeObj);
+				Node sourceNode = new Node(sourceNodeLabel);
+				if (nodes.contains(sourceNode)) {
+					sourceNode = hasNode(nodes, sourceNode);
 				} else {
-					sourceNodeObj.setId(nodeIdPrefix + nodeIndex++);
-					nodes.add(sourceNodeObj);
+					sourceNode.setId(nodeIdPrefix + nodeIndex++);
+					nodes.add(sourceNode);
 				}
+				
 				while (scanner.hasNextLine()) {
 					targetNodeLabel = scanner.nextLine();
-					if (targetNodeLabel.trim().equals(blank))
+					
+					if (targetNodeLabel.trim().equals(""))
 						break;
 					else {
-
-						Node targetNodeObj = new Node(targetNodeLabel);
-						if (nodes.contains(targetNodeObj)) {
-							targetNodeObj = getNativeObjFromNodesSet(nodes, targetNodeObj);
+						Node targetNode = new Node(targetNodeLabel);
+						if (nodes.contains(targetNode)) {
+							targetNode = hasNode(nodes, targetNode);
 						} else {
-							targetNodeObj.setId(nodeIdPrefix + nodeIndex++);
-							nodes.add(targetNodeObj);
+							targetNode.setId(nodeIdPrefix + nodeIndex++);
+							nodes.add(targetNode);
 						}
 
-						Edge edge = new Edge(edgeIdPrefix + edgeIndex, sourceNodeObj.getId(), targetNodeObj.getId());
+						Edge edge = new Edge(edgeIdPrefix + edgeIndex, sourceNode.getId(), targetNode.getId());
 						edges.add(edge);
 
 						edgeIndex++;
@@ -69,6 +68,7 @@ public class Builder {
 			}
 
 			Graph graph = new Graph();
+			
 			graph.setNodes(nodes);
 			graph.setEdges(edges);
 
@@ -77,27 +77,30 @@ public class Builder {
 
 	}
 
-	private Node getNativeObjFromNodesSet(Set<Node> nodes, Node node) {
+	private Node hasNode(Set<Node> nodes, Node node) {
+		
 		Iterator<Node> i = nodes.iterator();
+		
 		while (i.hasNext()) {
 			Node nativeNode = i.next();
 			if (nativeNode.equals(node))
 				return nativeNode;
 		}
+		
 		return null;
 	}
 
-	private String mapDataObjectToJson() {
-		String json = null;
+	private String mapper() {
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			json = mapper.writeValueAsString(buildDataObjectFromInputFile());
+			return mapper.writeValueAsString(buildGraph());
+			
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 
-		return json;
+		return null;
 	}
 	
 	public Builder(String fileName) throws FileNotFoundException {
@@ -106,7 +109,7 @@ public class Builder {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		Builder builder = new Builder((args.length > 0) ? args[0] : null);
-		String json = builder.mapDataObjectToJson();
+		String json = builder.mapper();
 		
 		System.out.println(json);
 	}

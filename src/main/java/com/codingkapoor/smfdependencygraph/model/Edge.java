@@ -6,10 +6,12 @@ public class Edge {
 
 	private String source;
 	private String target;
+	
 	private String type = "arrow";
 
 	public Edge(String id, String source, String target) {
 		this.id = id;
+		
 		this.source = source;
 		this.target = target;
 	}
