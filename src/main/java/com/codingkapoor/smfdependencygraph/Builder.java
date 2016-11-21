@@ -1,7 +1,8 @@
 package com.codingkapoor.smfdependencygraph;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Scanner;
@@ -19,10 +20,12 @@ public class Builder {
 	final private String edgeIdPrefix = "edge";
 
 	final private String blank = "";
+	
+	private InputStream is;
 
-	private Graph buildDataObjectFromInputFile(String fileName) {
+	private Graph buildDataObjectFromInputFile() {
 
-		try (Scanner scanner = new Scanner(new File(fileName))) {
+		try (Scanner scanner = new Scanner(is)) {
 
 			Set<Node> nodes = new LinkedHashSet<Node>();
 			Set<Edge> edges = new LinkedHashSet<Edge>();
@@ -70,10 +73,7 @@ public class Builder {
 			graph.setEdges(edges);
 
 			return graph;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		}
-		return null;
 
 	}
 
@@ -87,21 +87,27 @@ public class Builder {
 		return null;
 	}
 
-	private String mapDataObjectToJson(String fileName) {
+	private String mapDataObjectToJson() {
 		String json = null;
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			json = mapper.writeValueAsString(buildDataObjectFromInputFile(fileName));
+			json = mapper.writeValueAsString(buildDataObjectFromInputFile());
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
 
 		return json;
 	}
+	
+	public Builder(String fileName) throws FileNotFoundException {
+		is = (fileName != null) ? new FileInputStream(fileName) : getClass().getResourceAsStream("/dependants-lists.txt");
+	}
 
-	public static void main(String[] args) {
-		Builder builder = new Builder();
-		System.out.println(builder.mapDataObjectToJson("serviceDependants.txt"));
+	public static void main(String[] args) throws FileNotFoundException {
+		Builder builder = new Builder((args.length > 0) ? args[0] : null);
+		String json = builder.mapDataObjectToJson();
+		
+		System.out.println(json);
 	}
 }
