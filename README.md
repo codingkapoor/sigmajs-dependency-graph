@@ -1,10 +1,9 @@
 # smf-dependency-graph
-An attempt to build dependency graphs using simgajs javascript library.
 
-# Objective
+## Objective
 The object is to create dependency graph of all the processes managed by [SMF framework](http://www.oracle.com/technetwork/articles/servers-storage-admin/intro-smf-basics-s11-1729181.html) on a Solaris machine using a javascipt library called as [SigmaJs](http://sigmajs.org).
 
-# Algorithm
+## Algorithm
 This algorithm attempts to create a list of nodes and edges as a json string i.e., in a format acceptable by simgajs library provided a list of processes and there dependants in a particular format as specified below.
 
 ```
@@ -20,7 +19,8 @@ populate graph object with the nodes and edges list
 marshall the graph object into a json string in an output file
 ```
 
-###Input file format
+### Input file format
+
 Maintains a list of processes and their dependants.
 ```
 node a
@@ -35,7 +35,8 @@ node f
 node g
 ```
 
-###Output file format
+### Output file format
+
 The description regarding this format can be found at [SigmaJs](http://sigmajs.org).
 ```
 {
@@ -81,6 +82,6 @@ node g <target node>
 ```
 
 
-#####Notes
+##### Notes
 - The best data structure to represent a dependency graph is DAG i.e., directed acyclic graph.
 - Algorithm still needs to support input files that lists processes and there dependencies.
